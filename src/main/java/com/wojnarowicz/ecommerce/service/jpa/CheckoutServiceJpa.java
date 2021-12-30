@@ -1,5 +1,8 @@
 package com.wojnarowicz.ecommerce.service.jpa;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -7,8 +10,13 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.wojnarowicz.ecommerce.dto.PaymentInfoDTO;
 import com.wojnarowicz.ecommerce.dto.PurchaseDTO;
 import com.wojnarowicz.ecommerce.dto.PurchaseResponseDTO;
 import com.wojnarowicz.ecommerce.model.Address;
@@ -24,8 +32,10 @@ public class CheckoutServiceJpa implements CheckoutService {
   private final CustomerRepository customerRepository;
   
   @Autowired
-  public CheckoutServiceJpa(CustomerRepository customerRepository) {
+  public CheckoutServiceJpa(CustomerRepository customerRepository, @Value(value = "${stripe.key.secret}") String apiKey) {
     this.customerRepository = customerRepository;
+    
+    Stripe.apiKey = apiKey;
   }
 
 
@@ -61,5 +71,18 @@ public class CheckoutServiceJpa implements CheckoutService {
 
   private String generateOrderTrackingNumber() {
     return UUID.randomUUID().toString();
+  }
+
+
+  @Override
+  public PaymentIntent createPaymentIntent(PaymentInfoDTO paymentInfo) throws StripeException {
+    List<String> paymentMethodTypes = List.of("card");
+    
+    Map<String, Object> params = new HashMap<>();
+    params.put("amount",    paymentInfo.getAmount());
+    params.put("currency",  paymentInfo.getCurrency());
+    params.put("payment_method types", paymentMethodTypes);
+    
+    return PaymentIntent.create(params);
   }
 }
