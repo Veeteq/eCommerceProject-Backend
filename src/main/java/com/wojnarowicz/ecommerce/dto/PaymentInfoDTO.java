@@ -4,6 +4,7 @@ public class PaymentInfoDTO {
 
   private int amount;
   private String currency;
+  private String receiptEmail;
 
   public int getAmount() {
     return amount;
@@ -19,6 +20,14 @@ public class PaymentInfoDTO {
 
   public void setCurrency(String currency) {
     this.currency = currency;
+  }
+
+  public String getReceiptEmail() {
+    return receiptEmail;
+  }
+
+  public void setReceiptEmail(String receiptEmail) {
+    this.receiptEmail = receiptEmail;
   }
 
 }

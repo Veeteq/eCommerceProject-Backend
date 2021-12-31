@@ -84,10 +84,11 @@ public class CheckoutServiceJpa implements CheckoutService {
     List<String> paymentMethodTypes = List.of("card");
     
     Map<String, Object> params = new HashMap<>();
-    params.put("amount",    paymentInfo.getAmount());
-    params.put("currency",  paymentInfo.getCurrency());
+    params.put("amount",        paymentInfo.getAmount());
+    params.put("currency",      paymentInfo.getCurrency());
+    params.put("receipt_email", paymentInfo.getReceiptEmail());
     params.put("payment_method_types", paymentMethodTypes);
-    params.put("description", "Shopping at eCommerce on " + LocalDateTime.now().format(df));
+    params.put("description",   "Shopping at eCommerce on " + LocalDateTime.now().format(df));
     return PaymentIntent.create(params);
   }
 }
