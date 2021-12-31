@@ -1,5 +1,7 @@
 package com.wojnarowicz.ecommerce.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import com.wojnarowicz.ecommerce.service.CheckoutService;
 @RequestMapping(path = "/api/checkout")
 public class CheckoutController {
 
+  private final Logger logger = LoggerFactory.getLogger(CheckoutController.class);
   private CheckoutService checkoutService;
 
   @Autowired
@@ -36,9 +39,11 @@ public class CheckoutController {
   
   @PostMapping(path = "/payment-intent")
   public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentInfoDTO paymentInfo) throws StripeException {
+    logger.info("amount: " + paymentInfo.getAmount());
     PaymentIntent paymentIntent = checkoutService.createPaymentIntent(paymentInfo);
     
     String paymentIntentJson = paymentIntent.toJson();
+    logger.info("stripe response: " + paymentIntentJson);
     
     return new ResponseEntity<String>(paymentIntentJson, HttpStatus.CREATED);
   }
