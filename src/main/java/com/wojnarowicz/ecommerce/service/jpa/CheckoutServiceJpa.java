@@ -1,5 +1,7 @@
 package com.wojnarowicz.ecommerce.service.jpa;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,13 +78,16 @@ public class CheckoutServiceJpa implements CheckoutService {
 
   @Override
   public PaymentIntent createPaymentIntent(PaymentInfoDTO paymentInfo) throws StripeException {
+    String pattern = "yyyy-MM-dd HH:mm:ss";
+    DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
+    
     List<String> paymentMethodTypes = List.of("card");
     
     Map<String, Object> params = new HashMap<>();
     params.put("amount",    paymentInfo.getAmount());
     params.put("currency",  paymentInfo.getCurrency());
     params.put("payment_method_types", paymentMethodTypes);
-    
+    params.put("description", "Shopping at eCommerce on " + LocalDateTime.now().format(df));
     return PaymentIntent.create(params);
   }
 }
